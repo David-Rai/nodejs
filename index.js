@@ -1,37 +1,25 @@
-const fs=require("fs")
+const http=require('http')
+const {createServer}=http
+const fs=require('fs')
+const express=require('express')
 
-// const data=fs.readFileSync("./demo.txt","utf-8")
-// console.log(data)
-
-// fs.readFile("./demo.txt","utf8",(err,data)=>{
-//     if(err){
-//         return err
-//     }
-
-//     console.log(data)
-//     return console.log("sucessfully done")
-// })
-
-// fs.appendFileSync("./demo.txt","\n  amother line is added")
-
-// fs.appendFile('./demo.txt',"hey there",(err)=>{
-//     if(err){
-//         console.log(err)
-//     }
-//     return console.log("sucessfully apppended")
-// })
+//    configuring environment variable
+require('dotenv').config()
 
 
-// fs.unlinkSync("./demo.txt")
+const app=express()
 
-// fs.unlink("./demo.txt",(err)=>{
-//     if(err){
-//         console.log(err)
-//     }
-// })
+app.get('/',(req,res)=>{
+    res.status(200).json("hello brother this is homepage")
+
+})
 
 
-// fs.writeFileSync("./demo.txt","hey there")
 
-// fs.copyFileSync("./demo.txt","./second.txt")
-// fs.unlinkSync('./second.txt')
+app.get('/about/:id',(req,res)=>{
+
+    res.header("x-custom-header","cosadsdex").json({id:req.params.id})
+})
+
+const port=process.env.PORT
+app.listen(port,()=> console.log("server starting"))
