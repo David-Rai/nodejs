@@ -1,25 +1,27 @@
-const http=require('http')
-const {createServer}=http
-const fs=require('fs')
 const express=require('express')
-
-//    configuring environment variable
+const app=express()
 require('dotenv').config()
 
+// it converts the fetch or axios json into the js objects
+app.use(express.json())
 
-const app=express()
+//it serves the files like html,css,js and images to the client 
+app.use(express.static('public'))
+
+//it helps to understand the form plain data into readable format such as js 
+app.use(express.urlencoded({extended:true}))
 
 app.get('/',(req,res)=>{
-    res.status(200).json("hello brother this is homepage")
 
+    res.send("home pages")
 })
 
+app.post('/add',(req,res)=>{
+const data=req.body
 
+res.json({message:"successfully added",data})
 
-app.get('/about/:id',(req,res)=>{
-
-    res.header("x-custom-header","cosadsdex").json({id:req.params.id})
 })
 
 const port=process.env.PORT
-app.listen(port,()=> console.log("server starting"))
+app.listen(port,()=> console.log("server starting...."))
