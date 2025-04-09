@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 const fs = require("fs");
+const { parse } = require("path");
 
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -95,25 +96,56 @@ app.put('/users/:id',(req,res)=>{
 
 //DELETE/users/:id
 app.delete('/users/:id',(req,res)=>{
-    const userId=req.params.id
+const userId=Number(req.params.id)//convert into the number first
 
-    fs.readFile('./data.json','utf8',(err,data)=>{
-        if(err){
-            res.json(err)
-        }
 
-        const finalData=JSON.parse(data)
-        const filtered=finalData.filter(d=> d.id !== userId)
+	fs.readFile('./data.json','utf8',(err,data)=>{
+    if(err){
+      res.send(err)
+    }
+        //users are filter out 
+    const finalData=JSON.parse(data)
+    const filteredData=finalData.filter(d => d.id !== userId)
 
-         //writing into the database
-         fs.writeFile('./data.json',JSON.stringify(filtered,null,2),(err)=>{
-            if(err){
-                res.json(err)
-            }
-         res.json({msg:"sucessfully deleted",filtered})
-         })
+    //writing into the database
+    fs.writeFile("./data.json",JSON.stringify(filteredData,null,2),(err)=>{
+      if(err){
+        res.send(err)
+      }
     })
+    res.json({msg:"sucessfully deleted the data",filteredData})
+  })
+
+
 })
+
+//PATCH/users/:id
+app.patch('/users/:id',(req,res)=>{
+  const userId=parseInt(req.params.id)
+  const newData=req.body
+
+  fs.readFile('./data.json','utf8',(err,data)=>{
+    if(err){
+      res.send(err)
+    }
+    
+    const finalData=JSON.parse(data)
+    const index=finalData.findIndex(d => d.id == userId)
+ 
+
+    finalData[index]={...finalData[index],...newData}
+
+    //writing into the database
+    fs.writeFile("./data.json",JSON.stringify(finalData,null,2),(err)=>{
+      if(err){
+        res.json(err)
+      }
+      res.json({msg:"sucessfully updated the user"})
+    })
+   })
+})
+
+
 
 // Start server on a port specified in .env file
 const port = process.env.PORT;
